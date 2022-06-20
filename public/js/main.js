@@ -18,9 +18,9 @@ function getFetch(){
             // date released
             document.querySelector('.dateReleased').innerHTML = 'Release Date: ' + data.dateReleased
             // Celebs in movie
-            document.querySelector('.name1').innerHTML = 'Name: ' + data[notableCelebs].name1
-            document.querySelector('.name2').innerHTML = 'Name: ' + data[notableCelebs].name2
-            document.querySelector('.name3').innerHTML = 'Name: ' + data[notableCelebs].name3
+            document.querySelector('.celeb1').innerHTML = 'Name: ' + data.notableCelebs.name1
+            document.querySelector('.celeb2').innerHTML = 'Name: ' + data[notableCelebs].name2
+            document.querySelector('.celeb3').innerHTML = 'Name: ' + data[notableCelebs].name3
         })
 
         .catch(err => {
