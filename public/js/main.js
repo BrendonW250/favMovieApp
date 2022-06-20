@@ -13,11 +13,11 @@ function getFetch(){
             console.log(data)
 
             // for I Am Legend
-            document.querySelector('.name-of-movie').innerText = 'Movie: ' + data.movieTitle
+            document.querySelector('.name-of-movie').innerHTML = 'Movie: ' + data.movieTitle
             // Celebs in movie
-            document.querySelector('.name1').innerText = 'Name: ' + data.notableCelebs.name1
-            document.querySelector('.name2').innerText = 'Name: ' + data.notableCelebs.name2
-            document.querySelector('.name3').innerText = 'Name: ' + data.notableCelebs.name3
+            document.querySelector('.name1').innerHTML = 'Name: ' + data.notableCelebs.name1
+            document.querySelector('.name2').innerHTML = 'Name: ' + data.notableCelebs.name2
+            document.querySelector('.name3').innerHTML = 'Name: ' + data.notableCelebs.name3
         })
 
         .catch(err => {
