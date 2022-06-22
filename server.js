@@ -2,9 +2,19 @@ const express = require('express')
 const app = express()
 const PORT = 8000
 const cors = require('cors')
+const bodyParser = require('body-parser')
+const MongoClient = require('mongodb').MongoClient
+const res = require('express/lib/response')
 
+
+// 
+app.set('view engine', 'ejs')
 // so the app can use cors
 app.use(cors())
+
+// for body parser
+app.use(bodyParser.urlencoded({ extended: true }))
+
 
 // so the server can read the client side js
 app.use(express.urlencoded({
@@ -12,6 +22,186 @@ app.use(express.urlencoded({
 }))
 app.use(express.json())
 app.use(express.static('public'))
+
+MongoClient.connect('mongodb+srv://beazy:crazyhead165@cluster0.yemmw.mongodb.net/?retryWrites=true&w=majority',  {
+    useUnifiedTopology: true})
+
+        .then(client => {
+            console.log('Connected to Database')
+            const db = client.db('favorite-movies')
+            const movieCollection = db.collection('allMovies')
+
+            // now incorporate the express methods
+            app.get('/', (request, response) => {
+                // response.sendFile(__dirname + '/index.html')
+
+                const cursor = db.collection('allMovies').find()
+                console.log(cursor)
+
+                db.collection('allMovies').find().toArray()
+                    .then(results => {
+                        response.render('index.ejs', { allMovies: results })
+                    })
+                    .catch(error => console.log(error))
+                
+            })
+
+            app.get('/api/:movieName', (request, response) => {
+                const nameOfMovie = request.params.movieName
+                
+                
+                if (movies[nameOfMovie]){
+                    response.json(movies[nameOfMovie])
+                }else {
+                    response.json(movies['Other Movies'])
+                }
+            })
+
+            app.post('/addmovies', (request, response) => {
+                movieCollection.insertOne(request.body)
+                    .then(result => {
+                        response.redirect('/')
+                        
+                        
+                    })
+                    .catch(error => console.log(error))
+                    console.log(request.body)
+            })
+
+            app.listen(process.env.PORT || PORT, () => {
+                console.log(`The server is running on ${PORT}!`)
+            })
+    
+
+        })
+        .catch(error => console.error(error))
+
+    // .then(client => {
+    //     console.log('Connected to the database')
+
+    //     const db = client.db('favorite-movies')
+    //     const movieCollection = db.collection('movies')
+
+
+        // beginning of express request handlers
+        // app.get('/', (request, response) => {
+        //     response.sendFile(__dirname + '/index.html')
+
+        //     const cursor = db.collection('movies').find()
+        //     console.log(cursor)
+
+        //     // response.render(ejs, results)
+
+        //     db.collection('favorite-movies').find().toArray()
+        //         .then(results => {//movies represents all the data in the objects within the db
+        //             response.render('index.ejs', { movies: results })
+        //         })
+        //         .catch(error => console.log(error))
+
+        // })
+        // .catch(error => console.error(error))
+
+        // app.get('/api/:movieName', (request, response) => {
+            
+        //     const nameOfMovie = request.params.movieName
+            
+            
+        //     if (movies[nameOfMovie]){
+        //         response.json(movies[nameOfMovie])
+        //     }else {
+        //         response.json(movies['Other Movies'])
+        //     }
+        // })
+
+        // app.post('/addmovies', (request, response) => {
+        //     movieCollection.insertOne(request.body)
+
+        //     .then(result => {
+        //         console.log(result)
+        //         // response.redirect('/')
+                
+        //     })
+        //     .catch(error => console.log(error))
+        // })
+    
+
+    
+
+
+
+
+    // if (err) return console.log(err)
+    // console.log('Connected to Database')
+
+    // .then(client => {
+    //     console.log('Connected to Database')
+    //     const db = client.db('favorite-movies')
+    //     const movieCollection = db.collection('different-movies')
+
+        // placing the CRUD handlers in the db
+        // app.use(bodyParser.urlencoded({ extended: true }))
+
+        // app.get('/', (request, response) => {
+        //     response.sendFile(__dirname + '/index.html')
+
+        //     const cursor = db.collection('different-movies').find()
+        //     console.log(cursor)
+
+        //     db.collection('different-movies').find().toArray()
+        //         .then(results => {//movies represents all the data in the objects within the db
+        //             response.render('index.ejs', { movies: results })
+        //         })
+        //         .catch(error => console.log(error))
+        // })
+
+        // app.get('/api/:movieName', (request, response) => {
+        //     const nameOfMovie = request.params.movieName
+        
+        
+        //     if (movies[nameOfMovie]){
+        //         response.json(movies[nameOfMovie])
+        //     }else {
+        //         response.json(movies['Other Movies'])
+        //     }
+        // })
+
+        // app.post('/addmovies', (request, response) => {
+        //     console.log(request)
+        //     db.collection('favorite-movies').insertOne({movieTitle: request.body.movieTitle, 
+        //     dateReleased: request.body.dateReleased, notableCelebs: request.body.notableCelebs, 
+        //     shortBio: request.body.shortBio, rottenTomatoesRating: request.body.rottenTomatoesRating})
+        //     .then(result => {
+        //         console.log('Movie Added')
+        //         response.redirect('/')
+        //     })
+        //     .catch(error => console.log(error))
+        // })
+
+        // app.post('/addmovies', (request, response) => {
+        //     movieCollection.insertOne(request.body)
+        //         .then(result => {
+        //             response.redirect('/')
+        //         })
+        //         .catch(error => console.error(error))
+        // })
+
+        // app.listen(process.env.PORT || PORT, () => {
+        //     console.log(`The server is running on ${PORT}!`)
+        // })
+
+        
+    
+
+
+// so the app can use cors
+// app.use(cors())
+
+// so the server can read the client side js
+// app.use(express.urlencoded({
+//     extended: true
+// }))
+// app.use(express.json())
+// app.use(express.static('public'))
 
 
 const movies = {
@@ -87,24 +277,27 @@ const movies = {
 }
 
 // setting up server to hear request
-app.get('/', (request, response) => {
-    response.sendFile(__dirname + '/index.html')
-})
+// app.get('/', (request, response) => {
+//     response.sendFile(__dirname + '/index.html')
+// })
 
 // creating a different path
 // route is tailored to the user typing in one of my favorite movies
-app.get('/api/:movieName', (request, response) => {
-    const nameOfMovie = request.params.movieName
+// app.get('/api/:movieName', (request, response) => {
+//     const nameOfMovie = request.params.movieName
 
 
-    if (movies[nameOfMovie]){
-        response.json(movies[nameOfMovie])
-    }else {
-        response.json(movies['Other Movies'])
-    }
-})
+//     if (movies[nameOfMovie]){
+//         response.json(movies[nameOfMovie])
+//     }else {
+//         response.json(movies['Other Movies'])
+//     }
+// })
+
+// code here if I wanted to add onto my current list
+
 
 // telling the app to listen
-app.listen(process.env.PORT || PORT, () => {
-    console.log(`The server is running on ${PORT}!`)
-})
+// app.listen(process.env.PORT || PORT, () => {
+//     console.log(`The server is running on ${PORT}!`)
+// })
